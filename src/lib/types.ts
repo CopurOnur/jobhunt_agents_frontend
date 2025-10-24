@@ -70,3 +70,59 @@ export interface ApplicationGenerationStatus {
     timestamp: string;
   };
 }
+
+// Writer API Types
+
+export interface WriterStartRequest {
+  base_cv: string;
+  base_motivation_letter: string;
+  job_description: string;
+  company_name: string;
+  position_title: string;
+}
+
+export interface WriterSessionResponse {
+  session_id: string;
+  status: string;
+  message?: string;
+  timestamp: string;
+}
+
+export interface WriterRefineRequest {
+  refinement_request: string;
+}
+
+export interface ApplicationMaterials {
+  company: string;
+  position: string;
+  customized_cv: string;
+  motivation_letter: string;
+  match_summary: string;
+}
+
+export interface WriterStatusResponse {
+  session_id: string;
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  materials?: ApplicationMaterials;
+  error?: string;
+  started_at?: string;
+  completed_at?: string;
+}
+
+export interface ChatMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: string;
+}
+
+export interface WriterSaveResponse {
+  success: boolean;
+  message: string;
+  file_paths: {
+    cv_path: string;
+    letter_path: string;
+    summary_path: string;
+    output_directory: string;
+  };
+  timestamp: string;
+}

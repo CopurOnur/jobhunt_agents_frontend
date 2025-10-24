@@ -5,6 +5,11 @@ import type {
   GenerateApplicationsRequest,
   GenerateApplicationsResponse,
   StatusResponse,
+  WriterStartRequest,
+  WriterSessionResponse,
+  WriterStatusResponse,
+  WriterRefineRequest,
+  WriterSaveResponse,
 } from './types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:7860';
@@ -55,6 +60,38 @@ export const jobApi = {
   // Health check
   healthCheck: async (): Promise<{ status: string }> => {
     const response = await api.get('/health');
+    return response.data;
+  },
+};
+
+export const writerApi = {
+  // Start a new writer session
+  startSession: async (request: WriterStartRequest): Promise<WriterSessionResponse> => {
+    const response = await api.post<WriterSessionResponse>('/api/writer/start', request);
+    return response.data;
+  },
+
+  // Get writer session status and materials
+  getSession: async (sessionId: string): Promise<WriterStatusResponse> => {
+    const response = await api.get<WriterStatusResponse>(`/api/writer/session/${sessionId}`);
+    return response.data;
+  },
+
+  // Refine materials with a new request
+  refineSession: async (
+    sessionId: string,
+    request: WriterRefineRequest
+  ): Promise<WriterSessionResponse> => {
+    const response = await api.post<WriterSessionResponse>(
+      `/api/writer/refine/${sessionId}`,
+      request
+    );
+    return response.data;
+  },
+
+  // Save current materials to files
+  saveSession: async (sessionId: string): Promise<WriterSaveResponse> => {
+    const response = await api.post<WriterSaveResponse>(`/api/writer/save/${sessionId}`);
     return response.data;
   },
 };

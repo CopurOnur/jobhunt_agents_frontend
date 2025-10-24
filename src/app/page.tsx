@@ -68,7 +68,15 @@ export default function Home() {
                 AI-powered job search and personalized application generator
               </p>
             </div>
-            <LogoutButton />
+            <div className="flex items-center gap-4">
+              <a
+                href="/writer"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+              >
+                Custom Writer
+              </a>
+              <LogoutButton />
+            </div>
           </div>
 
         {/* Search Section */}
