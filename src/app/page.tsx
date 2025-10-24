@@ -6,6 +6,8 @@ import { useApplications } from '@/hooks/useApplications';
 import { SearchButton } from '@/components/SearchButton';
 import { JobList } from '@/components/JobList';
 import { LoadingState } from '@/components/LoadingState';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { LogoutButton } from '@/components/LogoutButton';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function Home() {
@@ -53,17 +55,21 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Job Application Flow
-          </h1>
-          <p className="text-gray-600">
-            AI-powered job search and personalized application generator
-          </p>
-        </div>
+    <ProtectedRoute>
+      <main className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 py-8 max-w-6xl">
+          {/* Header */}
+          <div className="mb-8 flex items-start justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                Job Application Flow
+              </h1>
+              <p className="text-gray-600">
+                AI-powered job search and personalized application generator
+              </p>
+            </div>
+            <LogoutButton />
+          </div>
 
         {/* Search Section */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
@@ -168,5 +174,6 @@ export default function Home() {
         )}
       </div>
     </main>
+    </ProtectedRoute>
   );
 }
