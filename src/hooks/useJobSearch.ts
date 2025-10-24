@@ -32,8 +32,9 @@ export function useJobSearch() {
     queryKey: ['jobPostings', searchId],
     queryFn: () => jobApi.getJobPostings(searchId!),
     enabled: !!searchId,
-    refetchInterval: (data) => {
+    refetchInterval: (query) => {
       // Stop polling when status is completed or failed
+      const data = query.state.data;
       if (data?.status === 'completed' || data?.status === 'failed') {
         return false;
       }

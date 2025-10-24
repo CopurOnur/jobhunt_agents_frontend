@@ -34,8 +34,9 @@ export function useApplications() {
     queryKey: ['generationStatus', generationId],
     queryFn: () => jobApi.getGenerationStatus(generationId!),
     enabled: !!generationId,
-    refetchInterval: (data) => {
+    refetchInterval: (query) => {
       // Stop polling when status is completed or failed
+      const data = query.state.data;
       if (data?.status === 'completed' || data?.status === 'failed') {
         return false;
       }
