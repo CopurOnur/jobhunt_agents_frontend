@@ -143,7 +143,7 @@ export function WriterPage() {
                 {/* Status Messages */}
                 {isRunning && (
                   <div className="mt-4 p-4 bg-blue-50 rounded-md">
-                    <LoadingState text="Processing your request..." />
+                    <LoadingState message="Processing your request..." />
                   </div>
                 )}
 
