@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { writerApi } from '@/lib/api';
 import type {
@@ -151,36 +151,45 @@ export function useApplicationWriter() {
     setSaveResult(null);
   }, []);
 
+  // Track the last completed timestamp to avoid duplicate messages
+  const lastCompletedTimestamp = useRef<string | null>(null);
+
   // Update chat history when materials are completed
-  const updateChatOnCompletion = useCallback(() => {
-    if (isCompleted && materials && chatHistory.length > 0) {
-      const lastMessage = chatHistory[chatHistory.length - 1];
-      if (lastMessage.role === 'system' && lastMessage.content.includes('Processing')) {
-        const assistantMessage: ChatMessage = {
-          role: 'assistant',
-          content: 'Materials updated successfully! You can preview them below or request further changes.',
-          timestamp: new Date().toISOString(),
-        };
-        setChatHistory((prev) => [...prev.slice(0, -1), assistantMessage]);
-      } else if (lastMessage.content.includes('Generating')) {
-        const assistantMessage: ChatMessage = {
-          role: 'assistant',
-          content: 'Initial materials generated! Review them below and let me know if you need any changes.',
-          timestamp: new Date().toISOString(),
-        };
-        setChatHistory((prev) => [...prev.slice(0, -1), assistantMessage]);
+  useEffect(() => {
+    if (isCompleted && materials && sessionData?.completed_at) {
+      // Only process if this is a new completion
+      if (lastCompletedTimestamp.current !== sessionData.completed_at) {
+        lastCompletedTimestamp.current = sessionData.completed_at;
+
+        setChatHistory((prev) => {
+          if (prev.length === 0) return prev;
+
+          const lastMessage = prev[prev.length - 1];
+
+          // Only replace if the last message is a system message
+          if (lastMessage.role === 'system') {
+            let assistantContent = '';
+            if (lastMessage.content.includes('Processing')) {
+              assistantContent = 'Materials updated successfully! You can preview them below or request further changes.';
+            } else if (lastMessage.content.includes('Generating')) {
+              assistantContent = 'Initial materials generated! Review them below and let me know if you need any changes.';
+            }
+
+            if (assistantContent) {
+              const assistantMessage: ChatMessage = {
+                role: 'assistant',
+                content: assistantContent,
+                timestamp: new Date().toISOString(),
+              };
+              return [...prev.slice(0, -1), assistantMessage];
+            }
+          }
+
+          return prev;
+        });
       }
     }
-  }, [isCompleted, materials, chatHistory]);
-
-  // Call update function when completion status changes
-  if (isCompleted && materials) {
-    const shouldUpdate = chatHistory.length > 0 &&
-      chatHistory[chatHistory.length - 1]?.role === 'system';
-    if (shouldUpdate) {
-      updateChatOnCompletion();
-    }
-  }
+  }, [isCompleted, materials, sessionData?.completed_at]);
 
   return {
     // Session management
